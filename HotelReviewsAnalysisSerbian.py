@@ -422,9 +422,12 @@ def lem_stem(word):
             return word[:-len(key)] + suffixes[key]
     return word
 
+def remove_whitespace(text):
+    return  " ".join(text.split())
+
 # todo: check if punctuation signs are in connection with the sentiment when dataset is complete
 # todo: check if caps lock is in connection with the sentiment when dataset is complete
-# todo: counting words and analyzing sentiment with dataset is complete
+# todo: counting words and analyzing sentiment when dataset is complete
 # todo: graphics
 # todo: bert(ic)
 

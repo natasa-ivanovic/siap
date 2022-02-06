@@ -1,0 +1,3 @@
+title|text|rating|sentiment
+Historic Gem Hotel in Business District of New Orleans|"Stay at The Whitney to capture a sense of the historry of New Orleans with its actual bank vault door decor, and location that is right in the heart of New Orleans great for business but close to the French Quarter for fun. It's clean, comfortable, has amenities, and is a great location, friendly too. "|5|1
+Excellent accommodations|"We thoroughly enjoyed our stay at The Whitney. The beds were very comfortable. The location is superb. It is walking distance to everything we did, French Quarter, Bourbon Street, shopping, Harrah's, etc. We will definitely stay here during our next trip to New Orleans. The staff was rather gracious as well. Loved it!!!!"|5|1
