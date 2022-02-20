@@ -1,0 +1,17 @@
+[
+("Stay at The Whitney to capture a sense of the historry of New Orleans with its actual bank vault door decor and location that is right in the heart of New Orleans great for business but close to the French Quarter for fun Its clean comfortable has amenities and is a great location friendly too Overall good trip Clean and friendly It was mid summer when we stayed and we prefer ice cold room Couldnt get it cool enough Bed was comfy Pillows a bit too thick for us Cold water at faucet was warm to hot Shower temp was perfectly hot Would recommend more mirrors in room A safe would be good addition and fridge Enjoyed continental breakfast Would stay at this beautiful hotel again ", {"entities": [(58, 69, "LOCATION"), (151, 162, "LOCATION"), (112, 120, "LOCATION"), (273, 281, "LOCATION"), (226, 231, "HYGIENE"), (313, 318, "HYGIENE"), (282, 290, "PERSONNEL"), (323, 331, "PERSONNEL"), (343, 349, "WEATHER"), (379, 387, "WEATHER"), (630, 639, "FOOD")]}),
+("Pizza is a common fast food.", {"entities": [(0, 5, "FOOD")]}),
+("Pasta is an italian recipe", {"entities": [(0, 5, "FOOD")]}),
+("China's noodles are very famous", {"entities": [(8,15, "FOOD")]}),
+("Shrimps are famous in China too", {"entities": [(0,7, "FOOD")]}),
+("Lasagna is another classic of Italy", {"entities": [(0,7, "FOOD")]}),
+("Sushi is extemely famous and expensive Japanese dish", {"entities": [(0,5, "FOOD")]}),
+("Unagi is a famous seafood of Japan", {"entities": [(0,5, "FOOD")]}),
+("Tempura , Soba are other famous dishes of Japan", {"entities": [(0,7, "FOOD")]}),
+("Udon is a healthy type of noodles", {"entities": [(0,4, "ORG")]}),
+("Chocolate soufflé is extremely famous french cuisine", {"entities": [(0,17, "FOOD")]}),
+("Flamiche is french pastry", {"entities": [(0,8, "FOOD")]}),
+("Burgers are the most commonly consumed fastfood", {"entities": [(0,7, "FOOD")]}),
+("Burgers are the most commonly consumed fastfood", {"entities": [(0,7, "FOOD")]}),
+("Frenchfries are considered too oily", {"entities": [(0,11, "FOOD")]})
+]
