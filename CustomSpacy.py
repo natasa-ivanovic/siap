@@ -32,7 +32,7 @@ ITERATIONS = 5
 
 
 def load(path):
-    return pd.read_csv(path, delimiter='|', encoding='utf-8', names=['title', 'text', 'rating', 'sentiment'], skiprows=1)
+    return pd.read_csv(path, delimiter='|', encoding='utf-8', names=['title', 'review', 'rating', 'sentiment'], skiprows=1)
 
 def evaluate(ner_model, data):
     scorer = Scorer()
@@ -48,7 +48,7 @@ def evaluate(ner_model, data):
 
 if __name__ == '__main__':
 
-    data = load('english reviews/reviews.txt')
+    data = load('./data/english-reviews/english-reviews.csv')
 
     #nlp = spacy.load('en_core_web_sm')
     #print(nlp.pipe_names)
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     # load data
     TRAIN_DATA = []
-    with open('ner_english', 'r') as file:
+    with open('data/ner/ner_english', 'r') as file:
         data = file.read().replace('\n', '')
         TRAIN_DATA = eval(data)
     print(TRAIN_DATA)

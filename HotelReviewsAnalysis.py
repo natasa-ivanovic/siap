@@ -1,7 +1,7 @@
 from preprocessing import EnglishPreprocessing as ep
 from preprocessing import SerbianPreprocessing as sp
 from language_detection import LanguageDetection as ld
-from models import SVMModel
+from models import SVMModel, RandomForestModel
 
 import pandas as pd
 
@@ -18,17 +18,22 @@ if __name__ == '__main__':
     print('>> Serbian reviews preprocessing...')
     srb_data_p = sp.df_preprocess(srb_data)
 
+    # print('>> Training phase for english reviews...')
+    # en_svm, en_vectorizer = SVMModel.train(en_data_p)
+    # print('>> Training phase for serbian reviews...')
+    # srb_svm, srb_vectorizer = SVMModel.train(srb_data_p)
+
     print('>> Training phase for english reviews...')
-    en_svm, en_vectorizer = SVMModel.train(en_data_p)
+    en_svm, en_vectorizer = RandomForestModel.train(en_data_p)
     print('>> Training phase for serbian reviews...')
-    srb_svm, srb_vectorizer = SVMModel.train(srb_data_p)
+    srb_svm, srb_vectorizer = RandomForestModel.train(srb_data_p)
 
     print('>> Training phase for language detection model...')
     lp_model, vectorizer = ld.train(srb_data, en_data)
 
     # test = 'Hello my dear friend I really enjoyed this hotel.'
-    test = 'Zaista sam se dobro provela u ovom baš lepom hotelu.'
-    # test = 'Ovo je užasno do bola!! Negativno iskustvo! Sobe smrde, ništa nije kao na slici!!! Odvratno je i gadi mi se.'
+    # test = 'Zaista sam se dobro provela u ovom baš lepom hotelu.'
+    test = 'Ovo je užasno do bola!! Negativno iskustvo! Sobe smrde, ništa nije kao na slici!!! Odvratno je i gadi mi se.'
     # test = 'I disliked the food and the room was too small. Did not enjoy it at all. AWFUL'
     language = ld.predict(test, vectorizer, lp_model)
     if language == 0:
