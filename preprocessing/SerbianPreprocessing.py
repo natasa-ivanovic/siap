@@ -1,42 +1,39 @@
-import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn import svm
-from sklearn import metrics
-from sklearn.pipeline import Pipeline
-from sklearn.svm import SVC
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, confusion_matrix
-
-import matplotlib.pyplot as plt
-import numpy as np
-
 emoji_dict = {
-    'odlicno': [':-)', ':)', ':-d', ':d', 'xd', '😀', '😁', '😃', '😄', '😆', '😉', '😊', '😋', '😎', '😍', '😘', '🥰', '😗', '😙', '😚', '☺', '🙂', '🤗', '🤩', '😌', '😛', '🙃', '😏', '🤤', '🙄', '5+', '10+', '5.00', '5/5', '10/10', '👍', '👌'],
-    'super': ['<3', '❤', '🧡', '💛', '💚', '💙', '💜', '🤎', '🖤', '🤍', '❣', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '💌'],
-    'lose': [':(', ':-(', '</3', '💔', '🤔', '🤨', '😐', '😑', '😶', '😥', '🤐', '😫', '🥱', '😴', '😒', '😓', '😔', '😕', '🤑', '☹', '🙁', '😖', '😞', '😟', '😢', '😭', '😦', '😧', '😨', '😩', '😬', '😰', '🥵', '😱', '😡', '🥺', '😣', '😠', '🤬', '🤮', '🤒', '🤢', '🤧', '🥶', '😤'],
+    'odlicno': [':-)', ':)', ':-d', ':d', 'xd', '😀', '😁', '😃', '😄', '😆', '😉', '😊', '😋', '😎', '😍', '😘', '🥰',
+                '😗', '😙', '😚', '☺', '🙂', '🤗', '🤩', '😌', '😛', '🙃', '😏', '🤤', '🙄', '5+', '10+', '5.00', '5/5',
+                '10/10', '👍', '👌'],
+    'super': ['<3', '❤', '🧡', '💛', '💚', '💙', '💜', '🤎', '🖤', '🤍', '❣', '💕', '💞', '💓', '💗', '💖', '💘', '💝',
+              '💟', '💌'],
+    'lose': [':(', ':-(', '</3', '💔', '🤔', '🤨', '😐', '😑', '😶', '😥', '🤐', '😫', '🥱', '😴', '😒', '😓', '😔',
+             '😕', '🤑', '☹', '🙁', '😖', '😞', '😟', '😢', '😭', '😦', '😧', '😨', '😩', '😬', '😰', '🥵', '😱', '😡',
+             '🥺', '😣', '😠', '🤬', '🤮', '🤒', '🤢', '🤧', '🥶', '😤'],
     'okej': ['😂', '🤣'],
     '': [';)', ';-)', 'D:']
 }
 
-
 # todo: analyze more when dataset is complete
 stop_words = [
     # licne zamenice
-    'ja', 'mene', 'me', 'meni', 'mi', 'mnom', 'mnome', 'ti', 'tebe', 'te', 'tebi', 'tobom', 'mi', 'nas', 'nama', 'nam', 'vi', 'vas', 'vama', 'vam', 'on', 'njega', 'ga', 'njemu', 'mu', 'njim', 'ono', 'ona', 'nje', 'je', 'njoj', 'joj', 'nju', 'ju', 'njom', 'oni', 'njih', 'ih', 'njima', 'im', 'one',
+    'ja', 'mene', 'me', 'meni', 'mi', 'mnom', 'mnome', 'ti', 'tebe', 'te', 'tebi', 'tobom', 'mi', 'nas', 'nama', 'nam',
+    'vi', 'vas', 'vama', 'vam', 'on', 'njega', 'ga', 'njemu', 'mu', 'njim', 'ono', 'ona', 'nje', 'je', 'njoj', 'joj',
+    'nju', 'ju', 'njom', 'oni', 'njih', 'ih', 'njima', 'im', 'one',
     'sebe', 'sebi', 'sobom', 'se',
     # upitne zamenice
     'ko', 'sta', 'koga', 'cega', 'kome', 'cemu',
     # neodredjene zamenice
-    'neko', 'nesto', 'nekog', 'nekoga', 'neceg', 'necega', 'nekim', 'nekime', 'necim', 'necime', 'nekome', 'necemu', 'nekom', 'necem',
+    'neko', 'nesto', 'nekog', 'nekoga', 'neceg', 'necega', 'nekim', 'nekime', 'necim', 'necime', 'nekome', 'necemu',
+    'nekom', 'necem',
     # prisvojne pridevske zamenice
-    'moj', 'moja', 'moje', 'tvoj', 'tvoja', 'tvoje', 'njegov', 'njegova', 'njegovo', 'njen', 'njena',  'njeno', 'nas', 'nasa', 'nase', 'vas', 'vasa', 'vase', 'njihov', 'njihova', 'njihovo', 'svoj', 'svoja', 'svoje',
+    'moj', 'moja', 'moje', 'tvoj', 'tvoja', 'tvoje', 'njegov', 'njegova', 'njegovo', 'njen', 'njena', 'njeno', 'nas',
+    'nasa', 'nase', 'vas', 'vasa', 'vase', 'njihov', 'njihova', 'njihovo', 'svoj', 'svoja', 'svoje',
     # pokazne pridevske zamenice
-    'ovaj', 'ova', 'ovo', 'onaj', 'taj', 'ta', 'to', 'ovakav', 'ovakva', 'ovakvo', 'ovoliki', 'ovolika', 'ovoliko', 'onoliki', 'onolika', 'onoliko', 'toliki', 'tolika', 'toliko',
+    'ovaj', 'ova', 'ovo', 'onaj', 'taj', 'ta', 'to', 'ovakav', 'ovakva', 'ovakvo', 'ovoliki', 'ovolika', 'ovoliko',
+    'onoliki', 'onolika', 'onoliko', 'toliki', 'tolika', 'toliko',
     # upitno-odnosne prisvojne zamenice
     'koji', 'koja', 'koje', 'ciji', 'cije', 'kakav', 'kakva', 'kakvo', 'koliki', 'kolika', 'koliko',
     # predlozi
-    'pred', 'nad', 'u', 'iz', 'od', 'do', 'zbog', 'radi', 'sa', 'o', 's', 'na', 'uz', 'ka', 'pod', 'pri', 'za', 'kod', 'oko', 'pored', 'iznad',
+    'pred', 'nad', 'u', 'iz', 'od', 'do', 'zbog', 'radi', 'sa', 'o', 's', 'na', 'uz', 'ka', 'pod', 'pri', 'za', 'kod',
+    'oko', 'pored', 'iznad',
     # veznici - izbaceno 'iako', 'ni', 'niti', 'sve', 'a', 'ali'
     'i', 'pa', 'te', 'no', 'nego', 'vec', 'jer', 'ako', 'osim', 'sem', 'kao', 'da', 'mada', 'premda', 'dok',
     'sav', 'sva', 'svo',
@@ -50,7 +47,6 @@ stop_words = [
     'ustvari', 'odole', 'kolko', 'al',
     'com', 'http', 'https'
 ]
-
 
 # used for stemming
 # source - https://github.com/nikolamilosevic86/SerbianStemmer
@@ -407,10 +403,6 @@ verbs = [
 ]
 
 
-def load(path):
-    return pd.read_csv(path, delimiter='|', encoding='utf-8', names=['title', 'review', 'sentiment'], skiprows=1)
-
-
 def replace_special_chars(review):
     for c in '.,!?-:();*="\'\\/#':
         review = review.replace(c, ' ')
@@ -427,51 +419,45 @@ def replace_emoji(review):
 def lem_stem(word):
     if word in verbs:
         return ''
-
     for key in suffixes:
         if word.endswith(key) and len(word) - len(key) > 2:
             return word[:-len(key)] + suffixes[key]
     return word
 
+
 def remove_whitespace(text):
-    return  " ".join(text.split())
+    return " ".join(text.split())
+
 
 # todo: check if punctuation signs are in connection with the sentiment when dataset is complete
 # todo: check if caps lock is in connection with the sentiment when dataset is complete
 # todo: counting words and analyzing sentiment when dataset is complete
 # todo: graphics
 # todo: bert(ic)
-
-
-def preprocess(data):
-    reviews = data['review']
+def preprocess(review):
     in_letters = 'čćđžš'
     out_letters = 'ccdzs'
     trans_tab = str.maketrans(in_letters, out_letters)
+    review = str.lower(review)
+    review = replace_emoji(review)
+    review = replace_special_chars(review)
+    all_words = review.split(' ')
+    update_list = []
+    for word in all_words:
+        if word != '' and word not in stop_words:
+            processed_word = word.translate(trans_tab)
+            lemmed_stemmed = lem_stem(processed_word)
+            # todo: analyze stem stop words
+            if lemmed_stemmed != '':
+                update_list.append(processed_word)
+    return update_list
+
+
+def df_preprocess(data):
+    reviews = data['review']
     update_review = []
     for review in reviews:
-        review = str.lower(review)
-        review = replace_emoji(review)
-        review = replace_special_chars(review)
-        all_words = review.split(' ')
-        update_list = []
-        for word in all_words:
-            if word != '' and word not in stop_words:
-                processed_word = word.translate(trans_tab)
-                lemmed_stemmed = lem_stem(processed_word)
-                # todo: analyze stem stop words
-                if lemmed_stemmed != '':
-                    update_list.append(processed_word)
+        update_list = preprocess(review)
         update_review.append(' '.join(update_list))
-
     data['review'] = update_review
     return data
-
-
-if __name__ == '__main__':
-    data = load('data/serbian-reviews/serbian-reviews.csv')
-    data = preprocess(data)
-
-
-
-
