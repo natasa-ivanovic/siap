@@ -1,0 +1,26 @@
+Best parameters after tuning
+{'rfc__max_depth': 20, 'rfc__max_features': 'sqrt', 'rfc__min_samples_leaf': 1, 'rfc__min_samples_split': 2, 'rfc__n_estimators': 400}
+
+
+Model after parameter tuning
+Pipeline(steps=[('vec',
+                 TfidfVectorizer(lowercase=False, ngram_range=(1, 2),
+                                 sublinear_tf=True, use_idf=False)),
+                ('rfc',
+                 RandomForestClassifier(max_depth=20, max_features='sqrt',
+                                        n_estimators=400))])
+
+
+Best score
+0.9162587064676618
+
+
+Classification report
+              precision    recall  f1-score   support
+
+          -1       0.84      0.96      0.90       125
+           1       0.95      0.82      0.88       126
+
+    accuracy                           0.89       251
+   macro avg       0.90      0.89      0.89       251
+weighted avg       0.90      0.89      0.89       251
