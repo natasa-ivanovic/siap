@@ -22,9 +22,9 @@
       "FURNITURE",
       "HYGIENE",
       "LOCATION",
-      "ORG",
       "PERSONELL",
       "PERSONNEL",
+      "PRICE",
       "WEATHER"
     ]
   },

@@ -8,9 +8,10 @@ import pandas as pd
 #from spacy.util import minibatch, compounding
 from spacy.training import Example
 from spacy.scorer import Scorer
+from sklearn.model_selection import train_test_split
 
 NEW_LABELS = ['PERSONELL', 'WEATHER', 'FOOD', 'HYGIENE', 'FURNITURE', 'LOCATION']
-ITERATIONS = 5
+ITERATIONS = 30
 
 
 #text = 'Stay at The Whitney to capture a sense of the historry of New Orleans with its actual bank vault door decor and location that is right in the heart of New Orleans great for business but close to the French Quarter for fun Its clean comfortable has amenities and is a great location friendly too Overall good trip Clean and friendly It was mid summer when we stayed and we prefer ice cold room Couldnt get it cool enough Bed was comfy Pillows a bit too thick for us Cold water at faucet was warm to hot Shower temp was perfectly hot Would recommend more mirrors in room A safe would be good addition and fridge Enjoyed continental breakfast Would stay at this beautiful hotel again '
@@ -103,23 +104,28 @@ if __name__ == '__main__':
     nlp.to_disk(str(pathlib.Path().resolve()) + '\spacy_model\\')
     nlp = spacy.load(str(pathlib.Path().resolve()) + '\spacy_model\\')
 
-    # test model
-    #TEST_TEXT = 'Dosa is an extremely famous south Indian dish'
-    TEST_TEXT = 'I ate Sushi yesterday. Maggi is a common fast food'
+    TEST_DATA = []
+    with open('data/ner/ner_english_test', 'r') as file:
+        test_data = file.read().replace('\n', '')
+        TEST_DATA = eval(data)
+    print(TEST_DATA)
 
-    doc = nlp(TEST_TEXT)
-    print('Entities', [(ent.text, ent.label_) for ent in doc.ents])
-
-    EXAMPLES = [
-        (TEST_TEXT,
-         {'entities': [(6,11,'FOOD'),(23,28,'FOOD')]})
-    ]
-
-    results = evaluate(nlp, EXAMPLES)
+    results = evaluate(nlp, TEST_DATA)
     # ents_p, ents_r, ents_f are the precision, recall and fscore for the NER task
     print(results)
     print('PRECISION: ', results['ents_p'])
     print('RECALL: ', results['ents_r'])
     print('FSCORE: ', results['ents_f'])
+
+    with open('data/ner/ner_english_results', 'w') as results_file:
+        results_file.write(str(results))
+        results_file.write('\nPRECISION: ' + str(results['ents_p']))
+        results_file.write('\nRECALL: ' + str(results['ents_r']))
+        results_file.write('\nFSCORE: ' + str(results['ents_f']))
+        for sentence in TEST_DATA:
+            doc = nlp(sentence[0])
+            results_file.write('\nEntities ')
+            list_results = ([(ent.text, ent.label_) for ent in doc.ents])
+            results_file.write(str(list_results))
 
 

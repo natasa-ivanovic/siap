@@ -143,7 +143,7 @@ def test_e_grid_search():
         ('rfm', RandomForestClassifier())
     ])
 
-    file_name = os.path.join('rfm_models_english_ngram_1_2', 'rfm_0_0.77128')
+    file_name = os.path.join('rfm_models_english_ngram_1_2', 'rfm_0_0.8617')
     with open(file_name, 'rb') as f:
         loaded_best_params = pickle.load(f)
 
@@ -258,5 +258,5 @@ def test_s_grid_search():
 if __name__ == '__main__':
     # train_s_grid_search()
     # test_s_grid_search()
-     train_e_grid_search()
-    # test_e_grid_search()
+    # train_e_grid_search()
+     test_e_grid_search()
