@@ -5,35 +5,16 @@ import spacy
 import random
 import pathlib
 import pandas as pd
-#from spacy.util import minibatch, compounding
 from spacy.training import Example
 from spacy.scorer import Scorer
-from sklearn.model_selection import train_test_split
 
-NEW_LABELS = ['PERSONELL', 'WEATHER', 'FOOD', 'HYGIENE', 'FURNITURE', 'LOCATION']
-ITERATIONS = 30
-
-
-#text = 'Stay at The Whitney to capture a sense of the historry of New Orleans with its actual bank vault door decor and location that is right in the heart of New Orleans great for business but close to the French Quarter for fun Its clean comfortable has amenities and is a great location friendly too Overall good trip Clean and friendly It was mid summer when we stayed and we prefer ice cold room Couldnt get it cool enough Bed was comfy Pillows a bit too thick for us Cold water at faucet was warm to hot Shower temp was perfectly hot Would recommend more mirrors in room A safe would be good addition and fridge Enjoyed continental breakfast Would stay at this beautiful hotel again '
-#TRAIN_DATA = [
-#(text, {'entities': [(58, 69, 'LOCATION'), (151, 162, 'LOCATION'), (112, 120, 'LOCATION'), (273, 281, 'LOCATION'), (226, 231, 'HYGIENE'), (313, 318, 'HYGIENE'), (282, 290, 'PERSONNEL'), (323, 331, 'PERSONNEL'), (343, 349, 'WEATHER'), (379, 387, 'WEATHER'), (630, 639, 'FOOD')]}),
-#              ('China's noodles are very famous', {'entities': [(8,15, 'FOOD')]}),
-#              ('Shrimps are famous in China too', {'entities': [(0,7, 'FOOD')]}),
-#              ('Lasagna is another classic of Italy', {'entities': [(0,7, 'FOOD')]}),
-#              ('Sushi is extemely famous and expensive Japanese dish', {'entities': [(0,5, 'FOOD')]}),
-#              ('Unagi is a famous seafood of Japan', {'entities': [(0,5, 'FOOD')]}),
-#              ('Tempura , Soba are other famous dishes of Japan', {'entities': [(0,7, 'FOOD')]}),
-#              ('Udon is a healthy type of noodles', {'entities': [(0,4, 'ORG')]}),
-#              ('Chocolate soufflé is extremely famous french cuisine', {'entities': [(0,17, 'FOOD')]}),
-#              ('Flamiche is french pastry', {'entities': [(0,8, 'FOOD')]}),
-#              ('Burgers are the most commonly consumed fastfood', {'entities': [(0,7, 'FOOD')]}),
-#              ('Burgers are the most commonly consumed fastfood', {'entities': [(0,7, 'FOOD')]}),
-#              ('Frenchfries are considered too oily', {'entities': [(0,11, 'FOOD')]})
-#]
+NEW_LABELS = ['PERSONELL', 'WEATHER', 'FOOD', 'HYGIENE', 'FURNITURE', 'LOCATION', 'PRICE']
+ITERATIONS = 50
 
 
 def load(path):
     return pd.read_csv(path, delimiter='|', encoding='utf-8', names=['title', 'review', 'rating', 'sentiment'], skiprows=1)
+
 
 def evaluate(ner_model, data):
     scorer = Scorer()
@@ -47,16 +28,8 @@ def evaluate(ner_model, data):
     return scores
 
 
-if __name__ == '__main__':
-
+def train():
     data = load('./data/english-reviews/english-reviews.csv')
-
-    #nlp = spacy.load('en_core_web_sm')
-    #print(nlp.pipe_names)
-    #doc = nlp(text)
-    #for ent in doc.ents:
-    #    print(ent.text, ent.label_)
-    #ner = nlp.get_pipe("ner")
 
     # create blank spacy model with ner pipe
     nlp = spacy.blank('en')
@@ -69,7 +42,7 @@ if __name__ == '__main__':
     with open('data/ner/ner_english', 'r') as file:
         data = file.read().replace('\n', '')
         TRAIN_DATA = eval(data)
-    print(TRAIN_DATA)
+    # print(TRAIN_DATA)
 
     # add labels to ner pipe
     for label in NEW_LABELS:
@@ -86,11 +59,12 @@ if __name__ == '__main__':
     # training the model
     with nlp.disable_pipes(*unaffected_pipes):
         for iteration in range(ITERATIONS):
+            print("Iteration: ", iteration)
             # shuufling examples before every iteration
             random.shuffle(TRAIN_DATA)
             losses = {}
             # batch up the examples using spaCy's minibatch
-            for batch in spacy.util.minibatch(TRAIN_DATA, size=2):
+            for batch in spacy.util.minibatch(TRAIN_DATA, size=20):
                 for t, annotations in batch:
                     doc = nlp.make_doc(t)
                     example = Example.from_dict(doc, annotations)
@@ -98,18 +72,41 @@ if __name__ == '__main__':
                     nlp.update(
                         [example], losses=losses, drop=0.3
                     )
-                print("Losses", losses)
+                # print("Losses", losses)
+            print(losses)
 
     # save and load model
     nlp.to_disk(str(pathlib.Path().resolve()) + '\spacy_model\\')
-    nlp = spacy.load(str(pathlib.Path().resolve()) + '\spacy_model\\')
 
+    nlp = spacy.load(str(pathlib.Path().resolve()) + '\spacy_model\\')
+    results = evaluate(nlp, TRAIN_DATA)
+
+    # ents_p, ents_r, ents_f are the precision, recall and fscore for the NER task
+    print(results)
+    print('PRECISION: ', results['ents_p'])
+    print('RECALL: ', results['ents_r'])
+    print('FSCORE: ', results['ents_f'])
+
+    with open('data/ner/ner_english_results_train', 'w') as results_file:
+        results_file.write(str(results))
+        results_file.write('\nPRECISION: ' + str(results['ents_p']))
+        results_file.write('\nRECALL: ' + str(results['ents_r']))
+        results_file.write('\nFSCORE: ' + str(results['ents_f']))
+        for sentence in TRAIN_DATA:
+            doc = nlp(sentence[0])
+            results_file.write('\nEntities ')
+            list_results = ([(ent.text, ent.label_) for ent in doc.ents])
+            results_file.write(str(list_results))
+
+
+def test():
     TEST_DATA = []
     with open('data/ner/ner_english_test', 'r') as file:
         test_data = file.read().replace('\n', '')
-        TEST_DATA = eval(data)
+        TEST_DATA = eval(test_data)
     print(TEST_DATA)
 
+    nlp = spacy.load(str(pathlib.Path().resolve()) + '\spacy_model\\')
     results = evaluate(nlp, TEST_DATA)
     # ents_p, ents_r, ents_f are the precision, recall and fscore for the NER task
     print(results)
@@ -117,7 +114,7 @@ if __name__ == '__main__':
     print('RECALL: ', results['ents_r'])
     print('FSCORE: ', results['ents_f'])
 
-    with open('data/ner/ner_english_results', 'w') as results_file:
+    with open('data/ner/ner_english_results_test', 'w') as results_file:
         results_file.write(str(results))
         results_file.write('\nPRECISION: ' + str(results['ents_p']))
         results_file.write('\nRECALL: ' + str(results['ents_r']))
@@ -127,5 +124,9 @@ if __name__ == '__main__':
             results_file.write('\nEntities ')
             list_results = ([(ent.text, ent.label_) for ent in doc.ents])
             results_file.write(str(list_results))
+
+
+if __name__ == '__main__':
+    train()
 
 
