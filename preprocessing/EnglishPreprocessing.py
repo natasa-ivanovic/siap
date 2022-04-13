@@ -46,6 +46,14 @@ def replace_emoji(review):
     return review
 
 
+def remove_neutral_words(review):
+    neutral_words = ['room', 'hotel', 'night', 'bed', 'staff', 'breakfast', 'time', 'bathroom', 'location', 'parking']
+    for word in neutral_words:
+        if word in review:
+            review = review.replace(word, '')
+    return review
+
+
 def remove_urls(text):
     url_pattern = re.compile(r'https?://\S+|www\.\S+')
     return url_pattern.sub(r'', text)
@@ -70,16 +78,11 @@ def stemming(text):
     return ' '.join(result)
 
 
-# todo: removing frequent words (word is neutral)
-# todo: check if punctuation signs are in connection with the sentiment when dataset is complete
-# todo: check if caps lock is in connection with the sentiment when dataset is complete
-# todo: counting words and analyzing sentiment when dataset is complete (word has sentiment)
-# todo: graphics
-# todo: bert, TFIDF, word2vec
 def preprocess(review):
     stop_words = stopwords.words('english')
     spell = SpellChecker()
     review = str.lower(review)
+    review = remove_neutral_words(review)
     review = replace_emoji(review)
     review = replace_special_chars(review)
     review = remove_urls(review)

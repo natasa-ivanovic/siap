@@ -1,0 +1,24 @@
+Best parameters after tuning
+{'svm__C': 1, 'svm__kernel': 'linear'}
+
+
+Model after parameter tuning
+Pipeline(steps=[('vec',
+                 TfidfVectorizer(lowercase=False, sublinear_tf=True,
+                                 use_idf=False)),
+                ('svm', SVC(C=1, kernel='linear'))])
+
+
+Best score
+0.8257924944812363
+
+
+Classification report
+              precision    recall  f1-score   support
+
+          -1       0.79      0.82      0.81        94
+           1       0.81      0.79      0.80        94
+
+    accuracy                           0.80       188
+   macro avg       0.80      0.80      0.80       188
+weighted avg       0.80      0.80      0.80       188

@@ -1,0 +1,24 @@
+Best parameters after tuning
+{'svm__C': 100, 'svm__gamma': 0.01, 'svm__kernel': 'rbf', 'vec__ngram_range': (1, 2)}
+
+
+Model after parameter tuning
+Pipeline(steps=[('vec',
+                 TfidfVectorizer(lowercase=False, ngram_range=(1, 2),
+                                 sublinear_tf=True, use_idf=False)),
+                ('svm', SVC(C=100, gamma=0.01))])
+
+
+Best score
+0.9252338308457713
+
+
+Classification report
+              precision    recall  f1-score   support
+
+          -1       0.95      0.96      0.95       126
+           1       0.96      0.94      0.95       125
+
+    accuracy                           0.95       251
+   macro avg       0.95      0.95      0.95       251
+weighted avg       0.95      0.95      0.95       251

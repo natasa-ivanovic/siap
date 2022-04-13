@@ -429,11 +429,6 @@ def remove_whitespace(text):
     return " ".join(text.split())
 
 
-# todo: check if punctuation signs are in connection with the sentiment when dataset is complete
-# todo: check if caps lock is in connection with the sentiment when dataset is complete
-# todo: counting words and analyzing sentiment when dataset is complete
-# todo: graphics
-# todo: bert(ic)
 def preprocess(review):
     in_letters = 'čćđžš'
     out_letters = 'ccdzs'
@@ -447,7 +442,6 @@ def preprocess(review):
         if word != '' and word not in stop_words:
             processed_word = word.translate(trans_tab)
             lemmed_stemmed = lem_stem(processed_word)
-            # todo: analyze stem stop words
             if lemmed_stemmed != '':
                 update_list.append(processed_word)
     return update_list

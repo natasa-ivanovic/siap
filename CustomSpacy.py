@@ -9,7 +9,7 @@ from spacy.training import Example
 from spacy.scorer import Scorer
 
 NEW_LABELS = ['PERSONELL', 'WEATHER', 'FOOD', 'HYGIENE', 'FURNITURE', 'LOCATION', 'PRICE']
-ITERATIONS = 50
+ITERATIONS = 10
 
 
 def load(path):
@@ -87,7 +87,7 @@ def train():
     print('RECALL: ', results['ents_r'])
     print('FSCORE: ', results['ents_f'])
 
-    with open('data/ner/ner_english_results_train', 'w') as results_file:
+    with open('data/ner/ner_english_results_train_10_iterations', 'w') as results_file:
         results_file.write(str(results))
         results_file.write('\nPRECISION: ' + str(results['ents_p']))
         results_file.write('\nRECALL: ' + str(results['ents_r']))
@@ -114,7 +114,7 @@ def test():
     print('RECALL: ', results['ents_r'])
     print('FSCORE: ', results['ents_f'])
 
-    with open('data/ner/ner_english_results_test', 'w') as results_file:
+    with open('data/ner/ner_english_results_test_10_iterations', 'w') as results_file:
         results_file.write(str(results))
         results_file.write('\nPRECISION: ' + str(results['ents_p']))
         results_file.write('\nRECALL: ' + str(results['ents_r']))
@@ -127,6 +127,6 @@ def test():
 
 
 if __name__ == '__main__':
-    train()
-
+    # train()
+    test()
 

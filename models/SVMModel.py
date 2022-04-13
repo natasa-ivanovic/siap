@@ -11,6 +11,11 @@ import joblib
 import pickle
 import os
 
+TRAIN_S = '../data/serbian-reviews/serbian-reviews.csv'
+TRAIN_E = '../data/english-reviews/english-reviews.csv'
+TEST_S = '../data/serbian-reviews/serbian-reviews-test.csv'
+TEST_E = '../data/english-reviews/english-reviews-test.csv'
+
 
 def tfidf_initialization(X):
     tfidf_vectorizer = TfidfVectorizer(use_idf=False, lowercase=False, sublinear_tf=True, ngram_range=(1, 2))
@@ -46,9 +51,19 @@ def train_e_grid_search():
     best_result = 0
     all_results = []
 
-    for i in range(1):
-        tuned_parameters = {'svm__C': [1, 10, 100, 200], 'svm__kernel': ['linear']}
-        data = pd.read_csv('../data/english-reviews/english-reviews.csv', delimiter='|', encoding='utf-8',
+    for i in range(10):
+        # tuned_parameters = {'svm__kernel': ['linear'], 'svm__C': [0.1, 1, 10, 100, 200, 1000]}
+        # tuned_parameters = {'svm__kernel': ['rbf'], 'svm__C': [0.1, 1, 10, 100, 200, 1000],
+        #                     'svm__gamma': [1, 0.1, 0.01, 0.001, 0.0001]}
+        # tuned_parameters = {'svm__kernel': ['poly'], 'svm__C': [0.1, 1, 10, 100, 200, 1000],
+        #                     'svm__gamma': [1, 0.1, 0.01, 0.001, 0.0001]}
+        # tuned_parameters = {'svm__kernel': ['sigmoid'], 'svm__C': [0.1, 1, 10, 100, 200, 1000],
+        #                     'svm__gamma': [1, 0.1, 0.01, 0.001, 0.0001]}
+
+        tuned_parameters = {'svm__kernel': ['rbf', 'poly', 'sigmoid'], 'svm__C': [0.1, 1, 10, 100, 200, 1000],
+                            'svm__gamma': [1, 0.1, 0.01, 0.001, 0.0001], 'vec__ngram_range': [(1, 1), (1, 2), (1, 3)]}
+
+        data = pd.read_csv(TRAIN_E, delimiter='|', encoding='utf-8',
                            names=['sentiment', 'review'], skiprows=1)
         data = ep.df_preprocess(data)
         #
@@ -58,7 +73,7 @@ def train_e_grid_search():
         y_train = train['sentiment']
         y_test = test['sentiment']
 
-        vectorizer = TfidfVectorizer(use_idf=False, lowercase=False, sublinear_tf=True, ngram_range=(1, 2))
+        vectorizer = TfidfVectorizer(use_idf=False, lowercase=False, sublinear_tf=True, ngram_range=(1, 3))
 
         pipeline = Pipeline([
             ('vec', vectorizer),
@@ -77,8 +92,8 @@ def train_e_grid_search():
 
         if score > best_result:
             best_result = score
-            file_name = os.path.join('svm_models_english_ngram_1_2', 'svm_' + str(i) + '_' + str(round(best_result, 5)))
-            file_name_description = os.path.join('svm_models_english_ngram_1_2', 'svm_' + str(i) + '_' + str(
+            file_name = os.path.join('svm_models_english_ngram_1_1', 'svm_' + str(i) + '_' + str(round(best_result, 5)))
+            file_name_description = os.path.join('svm_models_english_ngram_1_1', 'svm_' + str(i) + '_' + str(
                 round(best_result, 5)) + '_description.txt')
             # joblib.dump(grid_search.best_estimator_, file_name)
             with open(file_name, 'wb') as f:
@@ -102,7 +117,7 @@ def train_e_grid_search():
 
 
 def test_e_grid_search():
-    data = pd.read_csv('../data/english-reviews/english-reviews-test.csv', delimiter='|', encoding='utf-8',
+    data = pd.read_csv(TEST_E, delimiter='|', encoding='utf-8',
                        names=['sentiment', 'review'], skiprows=1)
     original_reviews = data['review'].values
 
@@ -114,11 +129,11 @@ def test_e_grid_search():
     y_test = data['sentiment']
 
     pipeline = Pipeline([
-        ('vec', TfidfVectorizer(use_idf=False, lowercase=False, sublinear_tf=True, ngram_range=(1, 2))),
+        ('vec', TfidfVectorizer(use_idf=False, lowercase=False, sublinear_tf=True, ngram_range=(1, 3))),
         ('svm', svm.SVC(kernel='linear'))
     ])
 
-    file_name = os.path.join('svm_models_english_ngram_1_2', 'svm_0_0.77128')
+    file_name = os.path.join('svm_models_english_ngram_1_1', 'svm_0_0.85638')
     with open(file_name, 'rb') as f:
         loaded_best_params = pickle.load(f)
 
@@ -138,9 +153,15 @@ def train_s_grid_search():
     best_result = 0
     all_results = []
 
-    for i in range(1):
-        tuned_parameters = {'svm__C': [1, 10, 100, 200], 'svm__kernel': ['linear']}
-        data = pd.read_csv('../data/serbian-reviews/serbian-reviews.csv', delimiter='|', encoding='utf-8',
+    for i in range(50):
+        # tuned_parameters = {'svm__kernel': ['linear'], 'svm__C': [0.1, 1, 10, 100, 200, 1000]}
+        tuned_parameters = {'svm__kernel': ['rbf', 'poly', 'sigmoid'], 'svm__C': [0.1, 1, 10, 100, 200, 1000],
+                            'svm__gamma': [1, 0.1, 0.01, 0.001, 0.0001], 'vec__ngram_range': [(1, 1), (1, 2), (1, 3)]}
+        # tuned_parameters = {'svm__kernel': ['poly'], 'svm__C': [0.1, 1, 10, 100, 200, 1000],
+        #                     'svm__gamma': [1, 0.1, 0.01, 0.001, 0.0001]}
+        # tuned_parameters = {'svm__kernel': ['sigmoid'], 'svm__C': [0.1, 1, 10, 100, 200, 1000],
+        #                     'svm__gamma': [1, 0.1, 0.01, 0.001, 0.0001]}
+        data = pd.read_csv(TRAIN_S, delimiter='|', encoding='utf-8',
                            names=['sentiment', 'review'], skiprows=1)
         data = sp.df_preprocess(data)
 
@@ -150,7 +171,8 @@ def train_s_grid_search():
         y_train = train['sentiment']
         y_test = test['sentiment']
 
-        vectorizer = TfidfVectorizer(use_idf=False, lowercase=False, sublinear_tf=True, ngram_range=(1, 2))
+        # vectorizer = TfidfVectorizer(use_idf=False, lowercase=False, sublinear_tf=True, ngram_range=(1, 1))
+        vectorizer = TfidfVectorizer(use_idf=False, lowercase=False, sublinear_tf=True)
 
         pipeline = Pipeline([
             ('vec', vectorizer),
@@ -168,8 +190,8 @@ def train_s_grid_search():
 
         if score > best_result:
             best_result = score
-            file_name = os.path.join('svm_models_serbian_ngram_1_2', 'svm_' + str(i) + '_' + str(round(best_result, 5)))
-            file_name_description = os.path.join('svm_models_serbian_ngram_1_2', 'svm_' + str(i) + '_' + str(round(best_result, 5)) + '_description.txt')
+            file_name = os.path.join('svm_models_serbian_ngram_1_1', 'svm_' + str(i) + '_' + str(round(best_result, 5)))
+            file_name_description = os.path.join('svm_models_serbian_ngram_1_1', 'svm_' + str(i) + '_' + str(round(best_result, 5)) + '_description.txt')
             # joblib.dump(grid_search.best_estimator_, file_name)
             with open(file_name, 'wb') as f:
                 pickle.dump(grid_search.best_estimator_.get_params(), f)
@@ -192,7 +214,7 @@ def train_s_grid_search():
 
 
 def test_s_grid_search():
-    data = pd.read_csv('../data/serbian-reviews/serbian-reviews-test.csv', delimiter='|', encoding='utf-8',
+    data = pd.read_csv(TEST_S, delimiter='|', encoding='utf-8',
                        names=['sentiment', 'review'], skiprows=1)
     original_reviews = data['review'].values
 
@@ -204,11 +226,11 @@ def test_s_grid_search():
     y_test = data['sentiment']
 
     pipeline = Pipeline([
-        ('vec', TfidfVectorizer(use_idf=False, lowercase=False, sublinear_tf=True, ngram_range=(1, 2))),
+        ('vec', TfidfVectorizer(use_idf=False, lowercase=False, sublinear_tf=True, ngram_range=(1, 3))),
         ('svm', svm.SVC(kernel='linear'))
     ])
 
-    file_name = os.path.join('svm_models_serbian_ngram_1_2', 'svm_0_0.93227')
+    file_name = os.path.join('svm_models_serbian_ngram_1_1', 'svm_10_0.95618')
     with open(file_name, 'rb') as f:
         loaded_best_params = pickle.load(f)
 
