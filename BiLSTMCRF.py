@@ -191,6 +191,9 @@ def train():
     y_pred = np.argmax(y_pred, axis=2)
     y_test = np.argmax(y_test, axis=2)
     accuracy = (y_pred == y_test).mean()
+    print("********************************************************")
+    print(y_pred)
+    print(y_test)
     print("Accuracy: {:.4f}".format(accuracy))
 
 

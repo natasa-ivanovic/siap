@@ -67,11 +67,11 @@ def train_e_grid_search():
 
 
     for i in range(1):
-        tuned_parameters = {'rfc__max_depth': [10, 20],
+        tuned_parameters = {'rfc__max_depth': [10, 20, 30, 40],
                             'rfc__max_features': ['auto', 'sqrt'],
                             'rfc__min_samples_leaf': [1, 2],
                             'rfc__min_samples_split': [2, 5],
-                            'rfc__n_estimators': [200, 400]
+                            'rfc__n_estimators': [200, 400, 600]
                             }
         data = pd.read_csv('../data/english-reviews/english-reviews.csv', delimiter='|', encoding='utf-8',
                            names=['sentiment', 'review'], skiprows=1)
@@ -83,7 +83,7 @@ def train_e_grid_search():
         y_train = train['sentiment']
         y_test = test['sentiment']
 
-        vectorizer = TfidfVectorizer(use_idf=False, lowercase=False, sublinear_tf=True, ngram_range=(1, 2))
+        vectorizer = TfidfVectorizer(use_idf=False, lowercase=False, sublinear_tf=True, ngram_range=(1, 3))
 
         pipeline = Pipeline([
             ('vec', vectorizer),
@@ -102,8 +102,8 @@ def train_e_grid_search():
 
         if score > best_result:
             best_result = score
-            file_name = os.path.join('rfm_models_english_ngram_1_2', 'rfm_' + str(i) + '_' + str(round(best_result, 5)))
-            file_name_description = os.path.join('rfm_models_english_ngram_1_2', 'rfm_' + str(i) + '_' + str(
+            file_name = os.path.join('rfm_models_english_ngram_1_3', 'rfm_' + str(i) + '_' + str(round(best_result, 5)))
+            file_name_description = os.path.join('rfm_models_english_ngram_1_3', 'rfm_' + str(i) + '_' + str(
                 round(best_result, 5)) + '_description.txt')
             # joblib.dump(grid_search.best_estimator_, file_name)
             with open(file_name, 'wb') as f:
@@ -163,12 +163,12 @@ def train_s_grid_search():
     best_result = 0
     all_results = []
 
-    for i in range(1):
-        tuned_parameters = {'rfc__max_depth': [10, 20],
+    for i in range(5):
+        tuned_parameters = {'rfc__max_depth': [10, 20, 30, 40],
                             'rfc__max_features': ['auto', 'sqrt'],
                             'rfc__min_samples_leaf': [1, 2],
                             'rfc__min_samples_split': [2, 5],
-                            'rfc__n_estimators': [200, 400]
+                            'rfc__n_estimators': [200, 400, 600]
                             }
         data = pd.read_csv('../data/serbian-reviews/serbian-reviews.csv', delimiter='|', encoding='utf-8',
                            names=['sentiment', 'review'], skiprows=1)
@@ -240,7 +240,7 @@ def test_s_grid_search():
         ('rfm', RandomForestClassifier())
     ])
 
-    file_name = os.path.join('rfm_models_serbian_ngram_1_2', 'rfm_0_0.88845')
+    file_name = os.path.join('rfm_models_serbian_ngram_1_2', 'rfm_0_0.89641')
     with open(file_name, 'rb') as f:
         loaded_best_params = pickle.load(f)
 
@@ -257,6 +257,6 @@ def test_s_grid_search():
 
 if __name__ == '__main__':
     # train_s_grid_search()
-    # test_s_grid_search()
+     test_s_grid_search()
     # train_e_grid_search()
-     test_e_grid_search()
+    # test_e_grid_search()
